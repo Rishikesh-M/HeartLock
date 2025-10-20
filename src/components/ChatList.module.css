@@ -87,3 +87,20 @@
 .button:hover {
   background-color: #e73c5c;
 }
+
+/* Remove room button */
+.removeButton {
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: none;
+  background-color: #ff6f91; /* pinkish red */
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+  margin-left: 4px;
+}
+
+.removeButton:hover {
+  background-color: #e55d80;
+}
