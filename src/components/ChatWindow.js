@@ -10,6 +10,7 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import EmojiPicker from "./EmojiPicker";
+import GifPicker from "./GifPicker";
 
 export default function ChatWindow({ selectedRoom }) {
   const [message, setMessage] = useState("");
@@ -76,7 +77,10 @@ export default function ChatWindow({ selectedRoom }) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+// state to toggle GIF picker
+const [showGifs, setShowGifs] = useState(false);
 
+<GifPicker onSelect={(gifUrl) => sendMessage(gifUrl, "gif")} />
   return (
     <div className={styles.container}>
       <h2>{selectedRoom?.name || "Select a Room 💌"}</h2>
