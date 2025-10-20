@@ -1,17 +1,15 @@
 import React, { useState } from "react";
 
-const GifPicker = ({ onSelect }) => {
-  const [gifs, setGifs] = useState([]);
+export default function GifPicker({ onSelect }) {
   const [search, setSearch] = useState("");
+  const [gifs, setGifs] = useState([]);
 
-  // Function to fetch GIFs from Giphy
-  const fetchGifs = async (query) => {
+  const fetchGifs = async (queryStr) => {
     const res = await fetch(
-      `https://api.giphy.com/v1/stickers/search?api_key=hhwlTr8sE3NhSTCWSKVWuVL6fUXFFHJH&q=${query}&limit=10`
+      `https://api.giphy.com/v1/stickers/search?api_key=YOUR_API_KEY&q=${queryStr}&limit=10`
     );
     const data = await res.json();
-    const urls = data.data.map(g => g.images.fixed_height.url);
-    setGifs(urls);
+    setGifs(data.data.map((g) => g.images.fixed_height.url));
   };
 
   const handleSearch = (e) => {
@@ -20,7 +18,7 @@ const GifPicker = ({ onSelect }) => {
   };
 
   return (
-    <div>
+    <div style={{ margin: "10px 0" }}>
       <form onSubmit={handleSearch}>
         <input
           type="text"
@@ -30,11 +28,10 @@ const GifPicker = ({ onSelect }) => {
         />
         <button type="submit">Search</button>
       </form>
-
       <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "10px" }}>
-        {gifs.map((url, index) => (
+        {gifs.map((url, i) => (
           <img
-            key={index}
+            key={i}
             src={url}
             width={100}
             style={{ cursor: "pointer" }}
@@ -44,6 +41,4 @@ const GifPicker = ({ onSelect }) => {
       </div>
     </div>
   );
-};
-
-export default GifPicker;
+}
