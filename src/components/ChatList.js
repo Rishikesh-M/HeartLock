@@ -15,7 +15,7 @@ import {
 export default function ChatList({ onSelectRoom }) {
   const [rooms, setRooms] = useState([]);
   const [search, setSearch] = useState("");
-  const [newRoom, setNewRoom] = useState({ name: "" });
+  const [newRoom, setNewRoom] = useState({ name: "", password: "" });
 
   useEffect(() => {
     const q = query(collection(db, "rooms"), orderBy("createdAt", "desc"));
@@ -29,9 +29,10 @@ export default function ChatList({ onSelectRoom }) {
     if (!newRoom.name.trim()) return;
     await addDoc(collection(db, "rooms"), {
       name: newRoom.name,
+      password: newRoom.password, // store password
       createdAt: new Date(),
     });
-    setNewRoom({ name: "" });
+    setNewRoom({ name: "", password: "" });
   };
 
   const clearChat = async (roomId) => {
@@ -43,10 +44,19 @@ export default function ChatList({ onSelectRoom }) {
   };
 
   const removeRoom = async (roomId) => {
-    // Remove all messages first
     await clearChat(roomId);
-    // Delete the room itself
     await deleteDoc(doc(db, "rooms", roomId));
+  };
+
+  const handleSelectRoom = (room) => {
+    if (room.password) {
+      const entered = prompt("Enter room password:");
+      if (entered !== room.password) {
+        alert("Incorrect password!");
+        return;
+      }
+    }
+    onSelectRoom(room);
   };
 
   const filteredRooms = rooms.filter((r) =>
@@ -66,8 +76,11 @@ export default function ChatList({ onSelectRoom }) {
       <div className={styles.roomList}>
         {filteredRooms.map((room) => (
           <div key={room.id} className={styles.roomWrapper}>
-            <div className={styles.room} onClick={() => onSelectRoom(room)}>
-              {room.name}
+            <div
+              className={styles.room}
+              onClick={() => handleSelectRoom(room)}
+            >
+              {room.name} {room.password && "🔒"}
             </div>
             <div>
               <button
@@ -93,6 +106,15 @@ export default function ChatList({ onSelectRoom }) {
           className={styles.input}
           value={newRoom.name}
           onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
+        />
+        <input
+          type="password"
+          placeholder="Password (optional)"
+          className={styles.input}
+          value={newRoom.password}
+          onChange={(e) =>
+            setNewRoom({ ...newRoom, password: e.target.value })
+          }
         />
         <button className={styles.button} onClick={createRoom}>
           Create Room 💖
