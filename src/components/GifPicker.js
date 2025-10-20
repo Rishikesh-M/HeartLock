@@ -6,7 +6,7 @@ export default function GifPicker({ onSelect }) {
 
   const fetchGifs = async (queryStr) => {
     const res = await fetch(
-      `https://api.giphy.com/v1/stickers/search?api_key=YOUR_API_KEY&q=${queryStr}&limit=10`
+      `https://api.giphy.com/v1/stickers/search?api_key=hhwlTr8sE3NhSTCWSKVWuVL6fUXFFHJH&q=${queryStr}&limit=10`
     );
     const data = await res.json();
     setGifs(data.data.map((g) => g.images.fixed_height.url));
