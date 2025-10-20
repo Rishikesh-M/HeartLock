@@ -1,3 +1,4 @@
+// src/components/ChatList.js
 import React, { useState, useEffect } from "react";
 import styles from "./ChatList.module.css";
 import { db } from "../firebase/firebase-config";
@@ -15,8 +16,9 @@ import {
 export default function ChatList({ onSelectRoom }) {
   const [rooms, setRooms] = useState([]);
   const [search, setSearch] = useState("");
-  const [newRoom, setNewRoom] = useState({ name: "", password: "" });
+  const [newRoomName, setNewRoomName] = useState("");
 
+  // Fetch all rooms
   useEffect(() => {
     const q = query(collection(db, "rooms"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -25,14 +27,14 @@ export default function ChatList({ onSelectRoom }) {
     return () => unsubscribe();
   }, []);
 
+  // Create a new room
   const createRoom = async () => {
-    if (!newRoom.name.trim()) return;
+    if (!newRoomName.trim()) return;
     await addDoc(collection(db, "rooms"), {
-      name: newRoom.name,
-      password: newRoom.password,
+      name: newRoomName,
       createdAt: new Date(),
     });
-    setNewRoom({ name: "", password: "" });
+    setNewRoomName("");
   };
 
   // Clear chat messages for a room
@@ -44,6 +46,7 @@ export default function ChatList({ onSelectRoom }) {
     });
   };
 
+  // Filter rooms by search
   const filteredRooms = rooms.filter((r) =>
     r.name.toLowerCase().includes(search.toLowerCase())
   );
@@ -51,6 +54,8 @@ export default function ChatList({ onSelectRoom }) {
   return (
     <div className={styles.container}>
       <h2>Rooms</h2>
+
+      {/* Search Box */}
       <input
         type="text"
         placeholder="Search room..."
@@ -59,6 +64,8 @@ export default function ChatList({ onSelectRoom }) {
         onChange={(e) => setSearch(e.target.value)}
         className={styles.input}
       />
+
+      {/* Room List */}
       <div className={styles.roomList}>
         {filteredRooms.map((room) => (
           <div key={room.id} className={styles.roomWrapper}>
@@ -77,23 +84,15 @@ export default function ChatList({ onSelectRoom }) {
           </div>
         ))}
       </div>
+
+      {/* New Room Creation */}
       <div className={styles.newRoom}>
         <input
           type="text"
           placeholder="New room name"
           style={{ color: "black", backgroundColor: "white" }}
-          value={newRoom.name}
-          onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
-          className={styles.input}
-        />
-        <input
-          type="password"
-          placeholder="Password (optional)"
-          style={{ color: "black", backgroundColor: "white" }}
-          value={newRoom.password}
-          onChange={(e) =>
-            setNewRoom({ ...newRoom, password: e.target.value })
-          }
+          value={newRoomName}
+          onChange={(e) => setNewRoomName(e.target.value)}
           className={styles.input}
         />
         <button className={styles.button} onClick={createRoom}>
