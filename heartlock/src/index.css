@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  transition: background 0.4s, color 0.4s;
+}
+
+/* 🌙 Dark Mode */
+html.dark {
+  background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+  color: white;
+}
+
+/* ☀️ Light Mode */
+html.light {
+  background: linear-gradient(to bottom right, #fdfbfb, #ebedee);
+  color: #222;
+}
+
+/* ❤️ Romantic Mode */
+html.romantic {
+  background: radial-gradient(circle at top left, #ff758c, #ff7eb3, #fcbad3);
+  color: white;
+}
+
+/* Floating heart animation for romantic mode */
+html.romantic::before {
+  content: "💞 💖 💘 💝 💗 💓 💕";
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  animation: floatHearts 10s infinite linear;
+  opacity: 0.4;
+}
+
+@keyframes floatHearts {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-40px) scale(1.2);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}

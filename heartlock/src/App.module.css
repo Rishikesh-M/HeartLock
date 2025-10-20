@@ -1,0 +1,70 @@
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    transition: all 0.4s ease;
+    font-family: Arial, sans-serif;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 24px;
+    align-items: center;
+    border-bottom: 1px solid #aaa;
+  }
+  
+  .button {
+    margin-left: 8px;
+    padding: 6px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .footer {
+    text-align: center;
+    padding: 8px;
+    font-size: 0.85rem;
+    opacity: 0.7;
+  }
+  
+  /* Themes */
+  .dark {
+    background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+    color: white;
+  }
+  
+  .light {
+    background: linear-gradient(to bottom right, #fdfbfb, #ebedee);
+    color: #222;
+  }
+  
+  .romantic {
+    background: radial-gradient(circle at top left, #ff758c, #ff7eb3, #fcbad3);
+    color: white;
+    position: relative;
+  }
+  
+  /* Floating hearts for romantic mode */
+  .romantic::before {
+    content: "💞 💖 💘 💝 💗 💓 💕";
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    animation: floatHearts 10s infinite linear;
+    opacity: 0.3;
+  }
+  
+  @keyframes floatHearts {
+    0% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-40px) scale(1.2); }
+    100% { transform: translateY(0) scale(1); }
+  }
+  
