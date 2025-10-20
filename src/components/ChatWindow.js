@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import styles from "./ChatWindow.module.css";
 import { db, auth } from "../firebase/firebase-config";
 import {
   collection,
@@ -7,187 +8,155 @@ import {
   orderBy,
   onSnapshot,
   serverTimestamp,
-  updateDoc,
-  doc,
 } from "firebase/firestore";
-import styles from "./ChatWindow.module.css";
-import { motion } from "framer-motion";
+import { EmojiPicker } from "emoji-picker-react";
+import GifPicker from "react-giphy-picker";
 
 export default function ChatWindow({ selectedRoom }) {
+  const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-  const [newMsg, setNewMsg] = useState("");
-  const [selectedGif, setSelectedGif] = useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showGifPicker, setShowGifPicker] = useState(false);
-  const messagesEndRef = useRef(null);
+  const [selectedGif, setSelectedGif] = useState(null);
+  const messageEndRef = useRef(null);
 
-  const user = auth.currentUser;
-
-  // 🔹 Load messages from Firestore
+  // 🔹 Load messages in real-time
   useEffect(() => {
     if (!selectedRoom) return;
+
     const q = query(
       collection(db, "rooms", selectedRoom.id, "messages"),
       orderBy("timestamp", "asc")
     );
+
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setMessages(msgs);
-
-      // Cache for offline
-      localStorage.setItem(`chat_${selectedRoom.id}`, JSON.stringify(msgs));
+      setMessages(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
     });
-
-    // Load offline cache
-    const cached = localStorage.getItem(`chat_${selectedRoom.id}`);
-    if (cached) setMessages(JSON.parse(cached));
 
     return () => unsubscribe();
   }, [selectedRoom]);
 
-  // 🔹 Scroll to latest message
+  // 🔹 Auto-scroll to latest message
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messageEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // 🔹 Send message (text/gif)
-  const handleSend = async (type = "text", content = newMsg) => {
-    if (!content.trim() && !selectedGif) return;
+  const handleSend = async (type = "text", content = message) => {
+    if (!content.trim()) return;
 
-    const newMessage = {
-      sender: user.uid,
-      type,
-      content: type === "text" ? content.trim() : content,
+    await addDoc(collection(db, "rooms", selectedRoom.id, "messages"), {
+      text: type === "text" ? content : "",
+      gif: type === "gif" ? content : "",
+      uid: auth.currentUser.uid,
       timestamp: serverTimestamp(),
-      seen: false,
-    };
-
-    await addDoc(collection(db, "rooms", selectedRoom.id, "messages"), newMessage);
-    setNewMsg("");
-    setSelectedGif(null);
-  };
-
-  // 🔹 Mark messages as seen
-  useEffect(() => {
-    if (!selectedRoom || !user) return;
-
-    messages.forEach(async (msg) => {
-      if (msg.sender !== user.uid && !msg.seen) {
-        const msgRef = doc(db, "rooms", selectedRoom.id, "messages", msg.id);
-        await updateDoc(msgRef, { seen: true });
-      }
     });
-  }, [messages, selectedRoom, user]);
 
-  // 🔹 Fetch GIFs (Giphy API)
-  const fetchGifs = async (query) => {
-    const res = await fetch(
-      `https://api.giphy.com/v1/stickers/search?api_key=YOUR_API_KEY&q=${query}&limit=10`
-    );
-    const data = await res.json();
-    return data.data.map((g) => g.images.fixed_height.url);
-  };
-
-  const [gifs, setGifs] = useState([]);
-  const [gifQuery, setGifQuery] = useState("");
-
-  const searchGifs = async () => {
-    const results = await fetchGifs(gifQuery || "love");
-    setGifs(results);
+    setMessage("");
+    setSelectedGif(null);
   };
 
   if (!selectedRoom)
     return (
       <div className={styles.empty}>
-        <h2>Select or Create a Room 💬</h2>
+        <p>Select or create a room to start chatting 💬</p>
       </div>
     );
 
   return (
-    <motion.div
-      className={styles.chatWindow}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-    >
+    <div className={styles.chatWindow}>
       {/* Header */}
-      <div className={styles.header}>
+      <header className={styles.header}>
         <h2>❤️ {selectedRoom.name}</h2>
-      </div>
+      </header>
 
-      {/* Chat Messages */}
+      {/* Messages */}
       <div className={styles.messages}>
         {messages.map((msg) => (
           <div
             key={msg.id}
             className={`${styles.message} ${
-              msg.sender === user.uid ? styles.sent : styles.received
+              msg.uid === auth.currentUser.uid ? styles.mine : styles.theirs
             }`}
           >
-            {msg.type === "gif" ? (
-              <img src={msg.content} alt="GIF" className={styles.gifMsg} />
-            ) : (
-              <p>{msg.content}</p>
-            )}
-            <span className={styles.tick}>
-              {msg.sender === user.uid
-                ? msg.seen
-                  ? "✅✅"
-                  : "✅"
-                : ""}
-            </span>
+            {msg.text && <p>{msg.text}</p>}
+            {msg.gif && <img src={msg.gif} alt="GIF" className={styles.gif} />}
           </div>
         ))}
-        <div ref={messagesEndRef} />
+        <div ref={messageEndRef} />
       </div>
 
-      {/* GIF Picker */}
-      {showGifPicker && (
-        <div className={styles.gifPicker}>
-          <div className={styles.gifSearch}>
-            <input
-              type="text"
-              value={gifQuery}
-              onChange={(e) => setGifQuery(e.target.value)}
-              placeholder="Search GIFs..."
-            />
-            <button onClick={searchGifs}>Search</button>
-          </div>
-          <div className={styles.gifGrid}>
-            {gifs.map((gif, i) => (
-              <img
-                key={i}
-                src={gif}
-                alt="gif"
-                onClick={() => {
-                  setSelectedGif(gif);
-                  handleSend("gif", gif);
-                  setShowGifPicker(false);
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Message Input */}
-      <div className={styles.inputArea}>
+      {/* Input Section */}
+      <div className={styles.inputSection}>
         <button
-          className={styles.gifButton}
-          onClick={() => setShowGifPicker(!showGifPicker)}
+          className={styles.iconButton}
+          onClick={() => setShowEmojiPicker(true)}
+        >
+          😊
+        </button>
+
+        <button
+          className={styles.iconButton}
+          onClick={() => setShowGifPicker(true)}
         >
           🎞️
         </button>
+
         <input
           type="text"
-          value={newMsg}
-          onChange={(e) => setNewMsg(e.target.value)}
-          placeholder="Type a message..."
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+          placeholder="Type your message..."
+          className={styles.input}
         />
-        <button onClick={() => handleSend("text")}>Send</button>
+
+        <button onClick={() => handleSend("text")} className={styles.sendBtn}>
+          ➤
+        </button>
       </div>
-    </motion.div>
+
+      {/* Emoji Picker Popup */}
+      {showEmojiPicker && (
+        <div className={styles.popup}>
+          <div className={styles.popupHeader}>
+            <h3>Select Emoji</h3>
+            <button
+              className={styles.closeBtn}
+              onClick={() => setShowEmojiPicker(false)}
+            >
+              ✖
+            </button>
+          </div>
+          <EmojiPicker
+            onEmojiClick={(emoji) => {
+              setMessage((prev) => prev + emoji.emoji);
+              setShowEmojiPicker(false);
+            }}
+          />
+        </div>
+      )}
+
+      {/* GIF Picker Popup */}
+      {showGifPicker && (
+        <div className={styles.popup}>
+          <div className={styles.popupHeader}>
+            <h3>Select GIF</h3>
+            <button
+              className={styles.closeBtn}
+              onClick={() => setShowGifPicker(false)}
+            >
+              ✖
+            </button>
+          </div>
+          <GifPicker
+            apiKey="YOUR_GIPHY_API_KEY"
+            onSelect={(gif) => {
+              setSelectedGif(gif.images.fixed_height.url);
+              handleSend("gif", gif.images.fixed_height.url);
+              setShowGifPicker(false);
+            }}
+          />
+        </div>
+      )}
+    </div>
   );
 }
