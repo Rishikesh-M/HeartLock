@@ -1,46 +1,54 @@
-/* Container for the chat list */
 .container {
   width: 300px;
-  border-right: 1px solid #444;
+  border-right: 1px solid #555;
   padding: 12px;
   display: flex;
   flex-direction: column;
-  background-color: #1a1a1a; /* dark background */
-  color: #eee; /* default text color */
+  background-color: #1c1c1c;
+  color: white;
 }
 
-/* Search and input fields */
 .input {
-  color: #eee;
-  background-color: #2a2a2a;
+  color: black;
   margin-bottom: 8px;
   padding: 6px 8px;
   border-radius: 6px;
-  border: 1px solid #555;
-  outline: none;
+  border: 1px solid #888;
 }
 
-/* Scrollable room list */
 .roomList {
   flex: 1;
   overflow-y: auto;
 }
 
-/* Each room item */
 .room {
   padding: 8px;
   border-radius: 8px;
   cursor: pointer;
   margin-bottom: 4px;
-  transition: background 0.2s, transform 0.1s;
+  transition: background 0.2s;
 }
 
 .room:hover {
-  background-color: rgba(255, 77, 109, 0.3); /* pink highlight */
-  transform: scale(1.02);
+  background-color: rgba(255, 111, 145, 0.3);
 }
 
-/* Wrapper for room + clear button */
+.newRoom {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.button {
+  padding: 6px 12px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: #ff6f91;
+  color: white;
+}
+
 .roomWrapper {
   display: flex;
   align-items: center;
@@ -48,59 +56,36 @@
   margin-bottom: 4px;
 }
 
-/* Button to clear messages */
 .clearButton {
   padding: 4px 6px;
   border-radius: 6px;
   border: none;
   background-color: #ff4d4d;
-  color: #fff;
+  color: white;
   cursor: pointer;
   font-size: 0.9rem;
   transition: background 0.2s;
 }
 
 .clearButton:hover {
-  background-color: #e73c3c;
+  background-color: #ff1a1a;
 }
 
-/* Section to create new room */
-.newRoom {
-  margin-top: 12px;
-  display: flex;
-  flex-direction: column;
-}
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #555;
+  }
 
-/* Create room button */
-.button {
-  padding: 6px 12px;
-  margin-top: 6px;
-  border-radius: 8px;
-  border: none;
-  cursor: pointer;
-  background-color: #ff4d6d;
-  color: #fff;
-  font-weight: bold;
-  transition: background 0.2s;
-}
+  .roomList {
+    flex-direction: row;
+    overflow-x: auto;
+  }
 
-.button:hover {
-  background-color: #e73c5c;
-}
-
-/* Remove room button */
-.removeButton {
-  padding: 4px 6px;
-  border-radius: 6px;
-  border: none;
-  background-color: #ff6f91; /* pinkish red */
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-  margin-left: 4px;
-}
-
-.removeButton:hover {
-  background-color: #e55d80;
+  .room {
+    flex: 0 0 auto;
+    margin-right: 6px;
+  }
 }
