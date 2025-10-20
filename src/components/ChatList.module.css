@@ -1,70 +1,77 @@
 .container {
-    width: 300px;
-    border-right: 1px solid #aaa;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .input {
-    color: black;
-    margin-bottom: 8px;
-    padding: 6px 8px;
-    border-radius: 6px;
-    border: 1px solid #888;
-  }
-  
-  .roomList {
-    flex: 1;
-    overflow-y: auto;
-  }
-  
-  .room {
-    padding: 8px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-bottom: 4px;
-    transition: background 0.2s;
-  }
-  
-  .room:hover {
-    background-color: rgba(255, 111, 145, 0.3);
-  }
-  
-  .newRoom {
-    margin-top: 12px;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .button {
-    padding: 6px 12px;
-    margin-top: 6px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    background-color: #ff6f91;
-    color: white;
-  }
-  .roomWrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 4px;
-  }
-  
-  .clearButton {
-    padding: 4px 6px;
-    border-radius: 6px;
-    border: none;
-    background-color: #ff4d4d;
-    color: white;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background 0.2s;
-  }
-  
-  .clearButton:hover {
-    background-color: #ff1a1a;
-  }
-  
+  width: 300px;
+  border-right: 1px solid #aaa;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  background-color: #f9f9f9;
+}
+
+.input {
+  color: black;
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #888;
+  font-size: 0.95rem;
+}
+
+.roomList {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.roomWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.room {
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.room:hover {
+  background-color: rgba(255, 111, 145, 0.3);
+}
+
+.clearButton {
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: none;
+  background-color: #ff4d4d;
+  color: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.clearButton:hover {
+  background-color: #ff1a1a;
+}
+
+.newRoom {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.button {
+  padding: 6px 12px;
+  margin-top: 6px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background-color: #ff6f91;
+  color: white;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.button:hover {
+  background-color: #e55d80;
+}
