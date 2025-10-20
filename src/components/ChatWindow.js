@@ -20,6 +20,8 @@ export default function ChatWindow({ selectedRoom }) {
   const [showGifs, setShowGifs] = useState(false);
   const [showStickers, setShowStickers] = useState(false);
   const [stickers, setStickers] = useState([]);
+  const [selectedGif, setSelectedGif] = useState(null);
+
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const containerRef = useRef(null);
@@ -29,7 +31,7 @@ export default function ChatWindow({ selectedRoom }) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Fetch messages from Firestore
+  // Fetch messages
   useEffect(() => {
     if (!selectedRoom) return;
     const q = query(
@@ -53,9 +55,9 @@ export default function ChatWindow({ selectedRoom }) {
     fetchStickers();
   }, []);
 
-  // Send message (text, gif, or sticker)
+  // Send message
   const handleSend = async (type = "text", content = message) => {
-    if (!content.trim() || !selectedRoom) return;
+    if (!content?.trim() || !selectedRoom) return;
     await addDoc(collection(db, `rooms/${selectedRoom.id}/messages`), {
       text: content,
       uid: auth.currentUser.uid,
@@ -63,13 +65,18 @@ export default function ChatWindow({ selectedRoom }) {
       type,
       timestamp: serverTimestamp(),
     });
+
+    // Clear input or selected GIF after sending
     if (type === "text") setMessage("");
+    if (type === "gif") setSelectedGif(null);
+
+    // Close pickers
+    setShowEmoji(false);
     setShowGifs(false);
     setShowStickers(false);
-    setShowEmoji(false);
   };
 
-  // Add emoji at cursor position
+  // Add emoji at cursor
   const addEmoji = (emoji) => {
     const cursorPos = inputRef.current.selectionStart;
     const newText =
@@ -82,7 +89,7 @@ export default function ChatWindow({ selectedRoom }) {
     }, 0);
   };
 
-  // Close pickers when clicking outside
+  // Close pickers on outside click
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (containerRef.current && !containerRef.current.contains(event.target)) {
@@ -130,7 +137,9 @@ export default function ChatWindow({ selectedRoom }) {
       {/* Input Area */}
       <div className={styles.inputWrapper} ref={containerRef}>
         {showEmoji && <EmojiPicker onSelect={addEmoji} />}
-        {showGifs && <GifPicker onSelect={(gifUrl) => handleSend("gif", gifUrl)} />}
+        {showGifs && (
+          <GifPicker onSelect={(gifUrl) => setSelectedGif(gifUrl)} />
+        )}
         {showStickers && (
           <div className={styles.stickerPicker}>
             {stickers.map((url, i) => (
@@ -146,8 +155,15 @@ export default function ChatWindow({ selectedRoom }) {
           </div>
         )}
 
+        {/* Selected GIF preview */}
+        {selectedGif && (
+          <div className={styles.selectedGifPreview}>
+            <img src={selectedGif} alt="selected gif" width={100} />
+          </div>
+        )}
+
         <div className={styles.inputContainer}>
-          {/* Emoji Button */}
+          {/* Emoji button */}
           <button
             className={styles.emojiButton}
             onClick={() => {
@@ -159,7 +175,7 @@ export default function ChatWindow({ selectedRoom }) {
             😍
           </button>
 
-          {/* GIF Button */}
+          {/* GIF button */}
           <button
             className={styles.gifButton}
             onClick={() => {
@@ -171,7 +187,7 @@ export default function ChatWindow({ selectedRoom }) {
             GIF
           </button>
 
-          {/* Sticker Button */}
+          {/* Sticker button */}
           <button
             className={styles.stickerButton}
             onClick={() => {
@@ -183,7 +199,7 @@ export default function ChatWindow({ selectedRoom }) {
             🎁
           </button>
 
-          {/* Message Input */}
+          {/* Message input */}
           <input
             ref={inputRef}
             type="text"
@@ -193,9 +209,21 @@ export default function ChatWindow({ selectedRoom }) {
             className={styles.input}
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
+
+          {/* Send text button */}
           <button className={styles.sendButton} onClick={() => handleSend()}>
             Send
           </button>
+
+          {/* Send GIF button (only visible if GIF selected) */}
+          {selectedGif && (
+            <button
+              className={styles.sendButton}
+              onClick={() => handleSend("gif", selectedGif)}
+            >
+              Send GIF
+            </button>
+          )}
         </div>
       </div>
     </div>
