@@ -1,7 +1,6 @@
-// src/components/ChatList.js
 import React, { useState, useEffect } from "react";
 import styles from "./ChatList.module.css";
-import { db } from "../firebase/firebase-config";
+import { db, auth } from "../firebase/firebase-config";
 import {
   collection,
   addDoc,
@@ -18,7 +17,7 @@ export default function ChatList({ onSelectRoom }) {
   const [search, setSearch] = useState("");
   const [newRoomName, setNewRoomName] = useState("");
 
-  // Fetch all rooms
+  // Fetch rooms
   useEffect(() => {
     const q = query(collection(db, "rooms"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -29,16 +28,25 @@ export default function ChatList({ onSelectRoom }) {
 
   // Create a new room
   const createRoom = async () => {
+    if (!auth.currentUser) {
+      alert("You must be logged in to create a room!");
+      return;
+    }
     if (!newRoomName.trim()) return;
     await addDoc(collection(db, "rooms"), {
       name: newRoomName,
       createdAt: new Date(),
+      createdBy: auth.currentUser.uid,
     });
     setNewRoomName("");
   };
 
   // Clear chat messages for a room
   const clearChat = async (roomId) => {
+    if (!auth.currentUser) {
+      alert("You must be logged in to clear chat!");
+      return;
+    }
     const messagesRef = collection(db, `rooms/${roomId}/messages`);
     const snapshot = await getDocs(messagesRef);
     snapshot.forEach(async (docSnap) => {
@@ -71,7 +79,13 @@ export default function ChatList({ onSelectRoom }) {
           <div key={room.id} className={styles.roomWrapper}>
             <div
               className={styles.room}
-              onClick={() => onSelectRoom(room)}
+              onClick={() => {
+                if (!auth.currentUser) {
+                  alert("You must be logged in to join a room!");
+                  return;
+                }
+                onSelectRoom(room);
+              }}
             >
               {room.name}
             </div>
@@ -85,7 +99,7 @@ export default function ChatList({ onSelectRoom }) {
         ))}
       </div>
 
-      {/* New Room Creation */}
+      {/* New Room */}
       <div className={styles.newRoom}>
         <input
           type="text"
