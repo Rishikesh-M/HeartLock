@@ -1,3 +1,4 @@
+// src/components/ChatWindow.js
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./ChatWindow.module.css";
 import { db, auth, storage } from "../firebase/firebase-config";
@@ -18,15 +19,15 @@ export default function ChatWindow({ selectedRoom }) {
   const [messages, setMessages] = useState([]);
   const [showEmoji, setShowEmoji] = useState(false);
   const [showGifs, setShowGifs] = useState(false);
+  const [selectedGif, setSelectedGif] = useState(null);
   const [showStickers, setShowStickers] = useState(false);
   const [stickers, setStickers] = useState([]);
-  const [selectedGif, setSelectedGif] = useState(null);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Scroll to bottom whenever messages change
+  // Scroll to bottom on new messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -65,12 +66,9 @@ export default function ChatWindow({ selectedRoom }) {
       type,
       timestamp: serverTimestamp(),
     });
-
-    // Clear input or selected GIF after sending
     if (type === "text") setMessage("");
     if (type === "gif") setSelectedGif(null);
 
-    // Close pickers
     setShowEmoji(false);
     setShowGifs(false);
     setShowStickers(false);
@@ -137,9 +135,7 @@ export default function ChatWindow({ selectedRoom }) {
       {/* Input Area */}
       <div className={styles.inputWrapper} ref={containerRef}>
         {showEmoji && <EmojiPicker onSelect={addEmoji} />}
-        {showGifs && (
-          <GifPicker onSelect={(gifUrl) => setSelectedGif(gifUrl)} />
-        )}
+        {showGifs && <GifPicker onSelect={(gifUrl) => setSelectedGif(gifUrl)} />}
         {showStickers && (
           <div className={styles.stickerPicker}>
             {stickers.map((url, i) => (
@@ -163,7 +159,6 @@ export default function ChatWindow({ selectedRoom }) {
         )}
 
         <div className={styles.inputContainer}>
-          {/* Emoji button */}
           <button
             className={styles.emojiButton}
             onClick={() => {
@@ -175,7 +170,6 @@ export default function ChatWindow({ selectedRoom }) {
             😍
           </button>
 
-          {/* GIF button */}
           <button
             className={styles.gifButton}
             onClick={() => {
@@ -187,7 +181,6 @@ export default function ChatWindow({ selectedRoom }) {
             GIF
           </button>
 
-          {/* Sticker button */}
           <button
             className={styles.stickerButton}
             onClick={() => {
@@ -199,7 +192,6 @@ export default function ChatWindow({ selectedRoom }) {
             🎁
           </button>
 
-          {/* Message input */}
           <input
             ref={inputRef}
             type="text"
@@ -210,12 +202,10 @@ export default function ChatWindow({ selectedRoom }) {
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
 
-          {/* Send text button */}
           <button className={styles.sendButton} onClick={() => handleSend()}>
             Send
           </button>
 
-          {/* Send GIF button (only visible if GIF selected) */}
           {selectedGif && (
             <button
               className={styles.sendButton}
