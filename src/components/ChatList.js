@@ -54,6 +54,7 @@ export default function ChatList({ onSelectRoom }) {
       <input
         type="text"
         placeholder="Search room..."
+        style={{ color: "black", backgroundColor: "white" }}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className={styles.input}
@@ -80,6 +81,7 @@ export default function ChatList({ onSelectRoom }) {
         <input
           type="text"
           placeholder="New room name"
+          style={{ color: "black", backgroundColor: "white" }}
           value={newRoom.name}
           onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
           className={styles.input}
@@ -87,6 +89,7 @@ export default function ChatList({ onSelectRoom }) {
         <input
           type="password"
           placeholder="Password (optional)"
+          style={{ color: "black", backgroundColor: "white" }}
           value={newRoom.password}
           onChange={(e) =>
             setNewRoom({ ...newRoom, password: e.target.value })
