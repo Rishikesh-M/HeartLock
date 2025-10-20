@@ -111,6 +111,7 @@ export default function ChatWindow({ selectedRoom }) {
               ref={inputRef}
               type="text"
               placeholder="Type a message..."
+              style={{ color: "black", backgroundColor: "white" }}
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               className={styles.input}
