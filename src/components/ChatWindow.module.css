@@ -1,274 +1,141 @@
-.container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-  background-color: #121212;
-  color: white;
-}
-
-.messages {
-  flex: 1;
-  overflow-y: auto;
-  margin-bottom: 8px;
-  padding-right: 4px;
-}
-
-.message {
-  max-width: 60%;
-  padding: 6px 12px;
-  border-radius: 16px;
-  margin-bottom: 6px;
-  word-wrap: break-word;
-}
-
-.ownMessage {
-  background-color: #ff6f91;
-  color: white;
-  align-self: flex-end;
-  text-align: right;
-}
-
-.otherMessage {
-  background-color: #555;
-  color: white;
-  align-self: flex-start;
-  text-align: left;
-}
-
-.name {
-  font-size: 0.75rem;
-  opacity: 0.7;
-  margin-bottom: 2px;
-}
-
-.inputWrapper {
-  position: relative;
-}
-
-.inputContainer {
-  display: flex;
-  gap: 6px;
-  margin-top: 4px;
-  align-items: center;
-}
-
-.input {
-  color: black;
-  flex: 1;
-  padding: 8px 12px;
-  border-radius: 25px;
-  border: 1px solid #888;
-  outline: none;
-  font-size: 1rem;
-}
-
-.sendButton {
-  padding: 8px 14px;
-  border-radius: 25px;
-  border: none;
-  background-color: #ff6f91;
-  color: white;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
-}
-
-.sendButton:hover {
-  background-color: #e55d80;
-}
-
-.emojiButton,
-.gifButton,
-.stickerButton {
-  padding: 6px 10px;
-  border-radius: 50%;
-  border: none;
-  background-color: #fff;
-  cursor: pointer;
-  font-size: 1.2rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  transition: transform 0.1s ease;
-}
-
-.emojiButton:hover,
-.gifButton:hover,
-.stickerButton:hover {
-  transform: scale(1.1);
-}
-
-.stickerPicker, .gifPicker {
-  position: absolute;
-  bottom: 60px;
-  left: 0;
-  background-color: #222;
-  border: 1px solid #555;
-  border-radius: 12px;
-  padding: 8px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  max-height: 200px;
-  overflow-y: auto;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-  z-index: 10;
-}
-
-.gif, .sticker {
-  max-width: 150px;
-  max-height: 150px;
-  border-radius: 12px;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .messages {
-    max-height: 60vh;
-  }
-
-  .inputContainer {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .emojiButton, .gifButton, .stickerButton, .sendButton {
-    width: 100%;
-  }
-
-  .stickerPicker, .gifPicker {
-    left: 0;
-    right: 0;
-    width: 95%;
-  }
-}
-
 .chatWindow {
-  flex: 2;
   display: flex;
   flex-direction: column;
-  background: #0f0f0f;
-  color: #fff;
-  border-left: 1px solid #222;
-  height: 100%;
+  background: #0f111a;
+  color: #f1f1f1;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 800px;
+  margin: auto;
+  height: 90vh;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .header {
-  padding: 1rem;
-  border-bottom: 1px solid #222;
-  background: #181818;
+  padding: 15px;
+  background: #1c1f2b;
+  border-bottom: 1px solid #2a2d3e;
   text-align: center;
 }
 
 .messages {
   flex: 1;
+  padding: 15px;
   overflow-y: auto;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
 }
 
 .message {
-  max-width: 75%;
-  padding: 0.6rem 1rem;
+  max-width: 70%;
+  margin: 8px 0;
+  padding: 10px 14px;
   border-radius: 12px;
-  position: relative;
-  font-size: 0.95rem;
   line-height: 1.4;
-  word-wrap: break-word;
 }
 
-.sent {
-  background: #2563eb;
-  align-self: flex-end;
-}
-
-.received {
-  background: #2c2c2c;
-  align-self: flex-start;
-}
-
-.tick {
-  font-size: 0.75rem;
-  margin-left: 6px;
-}
-
-.inputArea {
-  display: flex;
-  padding: 0.75rem;
-  background: #181818;
-  border-top: 1px solid #222;
-}
-
-.inputArea input {
-  flex: 1;
-  background: #0f0f0f;
-  border: 1px solid #333;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  outline: none;
-}
-
-.inputArea button {
-  margin-left: 10px;
-  background: #2563eb;
-  border: none;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.inputArea button:hover {
-  background: #1e40af;
-}
-
-.gifButton {
-  background: #111;
-  border: none;
+.mine {
+  background: #2d74ff;
   color: #fff;
-  font-size: 1.5rem;
-  margin-right: 8px;
-  cursor: pointer;
+  align-self: flex-end;
+  border-bottom-right-radius: 0;
 }
 
-.gifPicker {
-  background: #1a1a1a;
-  padding: 0.5rem;
-  border-top: 1px solid #333;
-  overflow-y: auto;
-  max-height: 250px;
+.theirs {
+  background: #2a2d3e;
+  align-self: flex-start;
+  border-bottom-left-radius: 0;
 }
 
-.gifGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.gifGrid img {
-  width: 100%;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.gifGrid img:hover {
-  transform: scale(1.05);
-}
-
-.gifMsg {
-  max-width: 150px;
+.gif {
+  max-width: 200px;
   border-radius: 10px;
+  margin-top: 5px;
+}
+
+.inputSection {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: #1c1f2b;
+  border-top: 1px solid #2a2d3e;
+}
+
+.input {
+  flex: 1;
+  background: #0f111a;
+  color: #fff;
+  border: none;
+  outline: none;
+  padding: 10px 15px;
+  border-radius: 20px;
+  margin: 0 10px;
+}
+
+.iconButton {
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: #bbb;
+  transition: 0.3s;
+}
+
+.iconButton:hover {
+  color: #fff;
+}
+
+.sendBtn {
+  background: #2d74ff;
+  border: none;
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.sendBtn:hover {
+  background: #4b8bff;
+}
+
+/* Popup modal */
+.popup {
+  position: absolute;
+  bottom: 80px;
+  right: 30px;
+  background: #1c1f2b;
+  border: 1px solid #2a2d3e;
+  border-radius: 12px;
+  padding: 10px;
+  z-index: 1000;
+  width: 300px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.popupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #fff;
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  color: #bbb;
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  color: #fff;
 }
 
 .empty {
   display: flex;
-  justify-content: center;
   align-items: center;
-  flex: 1;
-  color: #aaa;
+  justify-content: center;
+  height: 100%;
+  color: #777;
+  font-size: 1.1rem;
 }
