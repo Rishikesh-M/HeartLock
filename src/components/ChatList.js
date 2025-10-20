@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styles from "./ChatList.module.css";
-import { db } from "../firebase/firebase-config";
+import { db, auth } from "../firebase/firebase-config";
 import {
   collection,
   addDoc,
@@ -9,6 +9,7 @@ import {
   orderBy,
   deleteDoc,
   doc,
+  getDocs,
 } from "firebase/firestore";
 
 export default function ChatList({ onSelectRoom }) {
@@ -16,99 +17,111 @@ export default function ChatList({ onSelectRoom }) {
   const [search, setSearch] = useState("");
   const [newRoom, setNewRoom] = useState({ name: "", password: "" });
 
-  // Fetch rooms from Firestore
   useEffect(() => {
     const q = query(collection(db, "rooms"), orderBy("createdAt", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      setRooms(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    const unsub = onSnapshot(q, (snap) => {
+      setRooms(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
     });
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
 
-  // Create new room
   const createRoom = async () => {
+    if (!auth.currentUser) {
+      alert("Login required to create a room.");
+      return;
+    }
     if (!newRoom.name.trim()) return;
     await addDoc(collection(db, "rooms"), {
-      name: newRoom.name,
-      password: newRoom.password || null,
+      name: newRoom.name.trim(),
+      password: newRoom.password?.trim() || null,
       createdAt: new Date(),
+      createdBy: auth.currentUser.uid,
     });
     setNewRoom({ name: "", password: "" });
   };
 
-  // Remove a room
-  const removeRoom = async (roomId) => {
-    if (window.confirm("Are you sure you want to delete this room?")) {
-      await deleteDoc(doc(db, "rooms", roomId));
-    }
+  const clearChat = async (roomId) => {
+    if (!window.confirm("Clear all messages in this room?")) return;
+    const messagesRef = collection(db, `rooms/${roomId}/messages`);
+    const snap = await getDocs(messagesRef);
+    const deletes = snap.docs.map((m) => deleteDoc(doc(db, `rooms/${roomId}/messages`, m.id)));
+    await Promise.all(deletes);
   };
 
-  const filteredRooms = rooms.filter((r) =>
-    r.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const removeRoom = async (roomId) => {
+    if (!window.confirm("Delete this room and its messages? This cannot be undone.")) return;
+    // delete messages first
+    const messagesRef = collection(db, `rooms/${roomId}/messages`);
+    const snap = await getDocs(messagesRef);
+    const deletes = snap.docs.map((m) => deleteDoc(doc(db, `rooms/${roomId}/messages`, m.id)));
+    await Promise.all(deletes);
+    // delete room
+    await deleteDoc(doc(db, "rooms", roomId));
+  };
+
+  const handleSelectRoom = (room) => {
+    if (room.password) {
+      const entered = prompt("This room is password protected. Enter password to join:");
+      if (entered !== room.password) {
+        alert("Incorrect password.");
+        return;
+      }
+    }
+    onSelectRoom(room);
+  };
+
+  const filtered = rooms.filter((r) => r.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div className={styles.container}>
-      <h2>💌 Rooms</h2>
+    <aside className={styles.container}>
+      <h2 className={styles.title}>Rooms</h2>
+
       <input
-        type="text"
-        placeholder="Search room..."
+        className={styles.input}
+        placeholder="Search rooms..."
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        className={styles.input}
       />
+
       <div className={styles.roomList}>
-        {filteredRooms.map((room) => (
+        {filtered.map((room) => (
           <div key={room.id} className={styles.roomWrapper}>
-            <div
-              className={styles.room}
-              onClick={() => {
-                const password = room.password
-                  ? prompt("Enter room password:")
-                  : null;
-                if (room.password && password !== room.password) {
-                  alert("Incorrect password!");
-                  return;
-                }
-                onSelectRoom(room);
-              }}
-            >
-              {room.name}
-            </div>
-            <button
-              className={styles.clearButton}
-              onClick={() => removeRoom(room.id)}
-            >
-              🗑️
+            <button className={styles.room} onClick={() => handleSelectRoom(room)}>
+              <div className={styles.roomName}>{room.name}</div>
+              {room.password && <span className={styles.lock}>🔒</span>}
             </button>
+
+            <div className={styles.roomActions}>
+              <button className={styles.clearButton} onClick={() => clearChat(room.id)} title="Clear messages">
+                🗑️
+              </button>
+              <button className={styles.removeButton} onClick={() => removeRoom(room.id)} title="Remove room">
+                ❌
+              </button>
+            </div>
           </div>
         ))}
+
+        {filtered.length === 0 && <div className={styles.empty}>No rooms found</div>}
       </div>
 
-      {/* Create Room */}
       <div className={styles.newRoom}>
         <input
-          type="text"
+          className={styles.input}
           placeholder="New room name"
           value={newRoom.name}
-          onChange={(e) =>
-            setNewRoom({ ...newRoom, name: e.target.value })
-          }
-          className={styles.input}
+          onChange={(e) => setNewRoom({ ...newRoom, name: e.target.value })}
         />
         <input
-          type="password"
+          className={styles.input}
           placeholder="Password (optional)"
           value={newRoom.password}
-          onChange={(e) =>
-            setNewRoom({ ...newRoom, password: e.target.value })
-          }
-          className={styles.input}
+          onChange={(e) => setNewRoom({ ...newRoom, password: e.target.value })}
         />
         <button className={styles.button} onClick={createRoom}>
           Create Room 💖
         </button>
       </div>
-    </div>
+    </aside>
   );
 }
