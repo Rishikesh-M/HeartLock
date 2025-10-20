@@ -3,6 +3,7 @@ import Auth from "./components/Auth";
 import ChatList from "./components/ChatList";
 import ChatWindow from "./components/ChatWindow";
 import styles from "./App.module.css";
+import logo from "../logo.png";
 import { auth } from "./firebase/firebase-config";
 import { signOut } from "firebase/auth";
 import { onAuthStateChanged } from "firebase/auth";
