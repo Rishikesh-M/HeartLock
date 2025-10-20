@@ -48,6 +48,7 @@
   }
   
   .input {
+    color: black;
     flex: 1;
     padding: 6px 10px;
     border-radius: 25px;
