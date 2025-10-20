@@ -9,18 +9,14 @@ import { signOut, onAuthStateChanged } from "firebase/auth";
 export default function App() {
   const [user, setUser] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [theme, setTheme] = useState("dark");
 
+  // Auth listener
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, setUser);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
     return () => unsubscribe();
   }, []);
-
-  const toggleTheme = () => {
-    if (theme === "dark") setTheme("light");
-    else if (theme === "light") setTheme("romantic");
-    else setTheme("dark");
-  };
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -29,7 +25,8 @@ export default function App() {
   };
 
   return (
-    <div className={`${styles.app} ${styles[theme]}`}>
+    <div className={styles.app}>
+      {/* Header */}
       <header className={styles.header}>
         <h1>💌 HeartLock</h1>
         <div>
@@ -38,16 +35,10 @@ export default function App() {
               Logout
             </button>
           )}
-          <button className={styles.button} onClick={toggleTheme}>
-            {theme === "dark"
-              ? "☀️ Light"
-              : theme === "light"
-              ? "❤️ Romantic"
-              : "🌙 Dark"}
-          </button>
         </div>
       </header>
 
+      {/* Main */}
       <main className={styles.main}>
         {!user ? (
           <Auth />
