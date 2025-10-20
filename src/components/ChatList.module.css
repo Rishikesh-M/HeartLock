@@ -89,3 +89,116 @@
     margin-right: 6px;
   }
 }
+
+.chatList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #0f0f0f;
+  border-right: 1px solid #222;
+  color: #fff;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.header {
+  padding: 1rem;
+  border-bottom: 1px solid #222;
+  text-align: center;
+  background: #181818;
+}
+
+.createRoom {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid #222;
+  background: #111;
+}
+
+.createRoom input {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 6px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.createRoom input:focus {
+  border-color: #2563eb;
+}
+
+.createRoom button {
+  background: #2563eb;
+  border: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.createRoom button:hover {
+  background: #1e40af;
+}
+
+.error {
+  color: #f87171;
+  font-size: 0.85rem;
+}
+
+.rooms {
+  flex: 1;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.room {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1a1a1a;
+  padding: 0.8rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.room:hover {
+  background: #222;
+}
+
+.room h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.room p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #888;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: #f87171;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.removeBtn:hover {
+  color: #ef4444;
+}
+
+.empty {
+  text-align: center;
+  color: #777;
+  margin-top: 1rem;
+}
