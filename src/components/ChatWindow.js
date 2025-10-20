@@ -1,4 +1,3 @@
-// src/components/ChatWindow.js
 import React, { useState, useEffect, useRef } from "react";
 import styles from "./ChatWindow.module.css";
 import { db, auth, storage } from "../firebase/firebase-config";
@@ -19,20 +18,20 @@ export default function ChatWindow({ selectedRoom }) {
   const [messages, setMessages] = useState([]);
   const [showEmoji, setShowEmoji] = useState(false);
   const [showGifs, setShowGifs] = useState(false);
-  const [selectedGif, setSelectedGif] = useState(null);
   const [showStickers, setShowStickers] = useState(false);
   const [stickers, setStickers] = useState([]);
+  const [selectedGif, setSelectedGif] = useState(null);
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const containerRef = useRef(null);
 
-  // Scroll to bottom on new messages
+  // Scroll to bottom on new message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Fetch messages
+  // Fetch messages from Firestore
   useEffect(() => {
     if (!selectedRoom) return;
     const q = query(
@@ -56,29 +55,30 @@ export default function ChatWindow({ selectedRoom }) {
     fetchStickers();
   }, []);
 
-  // Send message
+  // Send message (text, gif, or sticker)
   const handleSend = async (type = "text", content = message) => {
-    if (!content?.trim() || !selectedRoom) return;
+    if (!auth.currentUser) {
+      alert("You must be logged in to send messages!");
+      return;
+    }
+    if (!content.trim() || !selectedRoom) return;
+
     await addDoc(collection(db, `rooms/${selectedRoom.id}/messages`), {
       text: content,
       uid: auth.currentUser.uid,
-      displayName: auth.currentUser.displayName,
+      displayName: auth.currentUser.displayName || "Anonymous",
       type,
       timestamp: serverTimestamp(),
     });
+
     if (type === "text") setMessage("");
     if (type === "gif") setSelectedGif(null);
-
-    setShowEmoji(false);
-    setShowGifs(false);
-    setShowStickers(false);
   };
 
   // Add emoji at cursor
   const addEmoji = (emoji) => {
     const cursorPos = inputRef.current.selectionStart;
-    const newText =
-      message.slice(0, cursorPos) + emoji + message.slice(cursorPos);
+    const newText = message.slice(0, cursorPos) + emoji + message.slice(cursorPos);
     setMessage(newText);
     setTimeout(() => {
       inputRef.current.focus();
@@ -114,28 +114,26 @@ export default function ChatWindow({ selectedRoom }) {
           <div
             key={msg.id}
             className={`${styles.message} ${
-              msg.uid === auth.currentUser.uid
+              msg.uid === auth.currentUser?.uid
                 ? styles.ownMessage
                 : styles.otherMessage
             }`}
           >
             <p className={styles.name}>{msg.displayName}</p>
             {msg.type === "text" && <p>{msg.text}</p>}
-            {msg.type === "gif" && (
-              <img src={msg.text} alt="gif" className={styles.gif} />
-            )}
-            {msg.type === "sticker" && (
-              <img src={msg.text} alt="sticker" className={styles.sticker} />
-            )}
+            {msg.type === "gif" && <img src={msg.text} alt="gif" className={styles.gif} />}
+            {msg.type === "sticker" && <img src={msg.text} alt="sticker" className={styles.sticker} />}
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input Area */}
+      {/* Input area */}
       <div className={styles.inputWrapper} ref={containerRef}>
         {showEmoji && <EmojiPicker onSelect={addEmoji} />}
-        {showGifs && <GifPicker onSelect={(gifUrl) => setSelectedGif(gifUrl)} />}
+        {showGifs && (
+          <GifPicker onSelect={(gifUrl) => setSelectedGif(gifUrl)} />
+        )}
         {showStickers && (
           <div className={styles.stickerPicker}>
             {stickers.map((url, i) => (
@@ -151,14 +149,8 @@ export default function ChatWindow({ selectedRoom }) {
           </div>
         )}
 
-        {/* Selected GIF preview */}
-        {selectedGif && (
-          <div className={styles.selectedGifPreview}>
-            <img src={selectedGif} alt="selected gif" width={100} />
-          </div>
-        )}
-
         <div className={styles.inputContainer}>
+          {/* Emoji button */}
           <button
             className={styles.emojiButton}
             onClick={() => {
@@ -170,6 +162,7 @@ export default function ChatWindow({ selectedRoom }) {
             😍
           </button>
 
+          {/* GIF button */}
           <button
             className={styles.gifButton}
             onClick={() => {
@@ -181,6 +174,7 @@ export default function ChatWindow({ selectedRoom }) {
             GIF
           </button>
 
+          {/* Sticker button */}
           <button
             className={styles.stickerButton}
             onClick={() => {
@@ -192,6 +186,7 @@ export default function ChatWindow({ selectedRoom }) {
             🎁
           </button>
 
+          {/* Message input */}
           <input
             ref={inputRef}
             type="text"
@@ -202,10 +197,12 @@ export default function ChatWindow({ selectedRoom }) {
             onKeyDown={(e) => e.key === "Enter" && handleSend()}
           />
 
+          {/* Send message button */}
           <button className={styles.sendButton} onClick={() => handleSend()}>
             Send
           </button>
 
+          {/* Send GIF button */}
           {selectedGif && (
             <button
               className={styles.sendButton}
