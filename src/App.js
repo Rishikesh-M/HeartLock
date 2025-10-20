@@ -9,7 +9,7 @@ import { signOut, onAuthStateChanged } from "firebase/auth";
 export default function App() {
   const [user, setUser] = useState(null);
   const [selectedRoom, setSelectedRoom] = useState(null);
-  const [loading, setLoading] = useState(true); // 🔹 Loading state to prevent flash
+  const [loading, setLoading] = useState(true); // 🔹 Loader while checking auth
 
   // Firebase Auth listener
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function App() {
   // Show loader while Firebase checks auth
   if (loading) {
     return (
-      <div className={styles.app}>
+      <div className={`${styles.app} ${styles.dark}`}>
         <div style={{ textAlign: "center", marginTop: "20%" }}>
           <h2>Loading...</h2>
         </div>
@@ -51,7 +51,7 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main */}
+      {/* Main Content */}
       <main className={styles.main}>
         {!user ? (
           <Auth />
