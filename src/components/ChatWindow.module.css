@@ -1,77 +1,159 @@
+/* Container for chat window */
 .container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 12px;
-  }
-  
-  .messages {
-    flex: 1;
-    overflow-y: auto;
-    margin-bottom: 8px;
-  }
-  
-  .message {
-    max-width: 60%;
-    padding: 6px 10px;
-    border-radius: 12px;
-    margin-bottom: 6px;
-  }
-  
-  .ownMessage {
-    background-color: #ff6f91;
-    color: white;
-    align-self: flex-end;
-    text-align: right;
-  }
-  
-  .otherMessage {
-    background-color: #555;
-    color: white;
-    align-self: flex-start;
-    text-align: left;
-  }
-  
-  .name {
-    font-size: 0.75rem;
-    opacity: 0.7;
-  }
-  
-  .inputWrapper {
-    position: relative;
-  }
-  
-  .inputContainer {
-    display: flex;
-    gap: 6px;
-    margin-top: 4px;
-  }
-  
-  .input {
-    color: black;
-    flex: 1;
-    padding: 6px 10px;
-    border-radius: 25px;
-    border: 1px solid #888;
-    outline: none;
-  }
-  
-  .sendButton {
-    padding: 6px 12px;
-    border-radius: 25px;
-    border: none;
-    background-color: #ff6f91;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .emojiButton {
-    padding: 6px 10px;
-    border-radius: 50%;
-    border: none;
-    background-color: #fff;
-    cursor: pointer;
-    font-size: 1.2rem;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  }
-  
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  background-color: #f2f2f2;
+}
+
+/* Messages list */
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 8px;
+  padding-right: 4px;
+}
+
+/* Individual message bubble */
+.message {
+  max-width: 60%;
+  padding: 6px 12px;
+  border-radius: 16px;
+  margin-bottom: 6px;
+  word-wrap: break-word;
+}
+
+/* Own messages */
+.ownMessage {
+  background-color: #ff6f91;
+  color: white;
+  align-self: flex-end;
+  text-align: right;
+}
+
+/* Messages from others */
+.otherMessage {
+  background-color: #555;
+  color: white;
+  align-self: flex-start;
+  text-align: left;
+}
+
+/* Sender name */
+.name {
+  font-size: 0.75rem;
+  opacity: 0.7;
+  margin-bottom: 2px;
+}
+
+/* Input area wrapper */
+.inputWrapper {
+  position: relative;
+}
+
+/* Input row container */
+.inputContainer {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  align-items: center;
+}
+
+/* Text input field */
+.input {
+  color: black;
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 25px;
+  border: 1px solid #888;
+  outline: none;
+  font-size: 1rem;
+}
+
+/* Send button */
+.sendButton {
+  padding: 8px 14px;
+  border-radius: 25px;
+  border: none;
+  background-color: #ff6f91;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.sendButton:hover {
+  background-color: #e55d80;
+}
+
+/* Emoji / GIF / Sticker buttons */
+.emojiButton,
+.gifButton,
+.stickerButton {
+  padding: 6px 10px;
+  border-radius: 50%;
+  border: none;
+  background-color: #fff;
+  cursor: pointer;
+  font-size: 1.2rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.1s ease;
+}
+
+.emojiButton:hover,
+.gifButton:hover,
+.stickerButton:hover {
+  transform: scale(1.1);
+}
+
+/* Sticker picker container */
+.stickerPicker {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+/* GIF picker container */
+.gifPicker {
+  position: absolute;
+  bottom: 60px;
+  left: 0;
+  width: 300px;
+  max-height: 250px;
+  overflow-y: auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+/* GIF / Sticker images */
+.gif,
+.sticker {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 12px;
+}
+
+/* Selected GIF preview (optional) */
+.selectedGifPreview {
+  max-width: 120px;
+  max-height: 120px;
+  border: 2px solid #ff6f91;
+  border-radius: 12px;
+  margin-right: 6px;
+}
